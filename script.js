@@ -50,7 +50,6 @@ document.getElementById("location-form").addEventListener("submit", async (event
       recommendation = "Hazardous: Health warning of emergency conditions: everyone is more likely to be affected.";
     }
 
-
     // Display data dynamically
     const resultDiv = document.getElementById("result");
     resultDiv.innerHTML = `
@@ -58,6 +57,7 @@ document.getElementById("location-form").addEventListener("submit", async (event
       <p><strong>AQI (US):</strong> ${aqi}</p>
       <p><strong>Main Pollutant:</strong> ${mainPollutant}</p>
       <p><strong>Temperature:</strong> ${temperature}°C</p>
+      <p><strong>Health Recommendation:</strong> ${recommendation}</p>
     `;
     resultDiv.style.display = "block"; // Show the result section
 
