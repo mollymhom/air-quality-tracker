@@ -1,5 +1,5 @@
 // Replace with your actual API key from AirVisual API
-const API_KEY = "YOUR_API_KEY";
+const API_KEY = "c0036d36-b809-4435-ab73-08e8ea5c92cf";
 
 document.getElementById("location-form").addEventListener("submit", async (event) => {
   event.preventDefault(); // Prevent form submission
