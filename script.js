@@ -1,4 +1,4 @@
-// Actual API key from AirVisual API
+// Replace with your actual API key from AirVisual API
 const API_KEY = "c0036d36-b809-4435-ab73-08e8ea5c92cf";
 
 document.getElementById("location-form").addEventListener("submit", async (event) => {
@@ -15,24 +15,36 @@ document.getElementById("location-form").addEventListener("submit", async (event
     return;
   }
 
-  // API URL
-  const url = `https://api.airvisual.com/v2/city?city=${city}&state=${state}&country=${country}&key=${API_KEY}`;
+  // API URLs
+  const cityUrl = `https://api.airvisual.com/v2/city?city=${city}&state=${state}&country=${country}&key=${API_KEY}`;
+  const statesUrl = `https://api.airvisual.com/v2/states?country=${country}&key=${API_KEY}`;
 
   try {
-    // Fetch data from the API
-    const response = await fetch(url);
-    if (!response.ok) throw new Error("Error fetching data");
+    // Fetch data from city endpoint
+    const cityResponse = await fetch(cityUrl);
+    if (!cityResponse.ok) throw new Error("Error fetching air quality data");
 
-    const data = await response.json();
-
-    if (data.status !== "success") {
-      throw new Error(data.data.message || "Invalid response from API");
+    const cityData = await cityResponse.json();
+    if (cityData.status !== "success") {
+      throw new Error(cityData.data.message || "Invalid response from city API");
     }
 
-    // Extract relevant data
-    const aqi = data.data.current.pollution.aqius;
-    const mainPollutant = data.data.current.pollution.mainus;
-    const temperature = data.data.current.weather.tp;
+    // Extract relevant data from city API
+    const aqi = cityData.data.current.pollution.aqius;
+    const mainPollutant = cityData.data.current.pollution.mainus;
+    const temperature = cityData.data.current.weather.tp;
+
+    // Fetch data from states endpoint
+    const statesResponse = await fetch(statesUrl);
+    if (!statesResponse.ok) throw new Error("Error fetching states data");
+
+    const statesData = await statesResponse.json();
+    if (statesData.status !== "success") {
+      throw new Error(statesData.data.message || "Invalid response from states API");
+    }
+
+    // Extract states information
+    const states = statesData.data.map((state) => state.state).join(", ");
 
     // Add health recommendation based on AQI
     let recommendation;
@@ -74,6 +86,7 @@ document.getElementById("location-form").addEventListener("submit", async (event
       <p><strong>Main Pollutant:</strong> ${mainPollutant}</p>
       <p><strong>Temperature:</strong> ${temperature}°C</p>
       <p><strong>Health Recommendation:</strong> ${recommendation}</p>
+      <p><strong>Available States in ${country}:</strong> ${states}</p>
     `;
     resultDiv.style.display = "block"; // Ensure the result is visible
 
