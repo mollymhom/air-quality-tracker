@@ -23,7 +23,7 @@ document.getElementById("location-form").addEventListener("submit", async (event
   try {
     // Fetch data from city endpoint
     const cityResponse = await fetch(cityUrl);
-    if (!cityResponse.ok) throw new Error("Error fetching air quality data");
+    if (!cityResponse.ok) throw new Error("Unable to fetch air quality data. Please check your input.");
 
     const cityData = await cityResponse.json();
     if (cityData.status !== "success") {
