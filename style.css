@@ -50,3 +50,26 @@ body {
     border-color: #f5c6cb;
   }
   
+  /* General styling for larger screens */
+input {
+    width: 80%; /* Use percentage for responsiveness */
+    max-width: 400px; /* Set a reasonable maximum width */
+  }
+  
+  button {
+    width: auto;
+    padding: 10px 15px;
+  }
+  
+  /* Media query for smaller screens */
+  @media (max-width: 768px) {
+    input {
+      width: 90%; /* Adjust for smaller screens */
+    }
+  
+    #result {
+      margin: 10px;
+      padding: 15px;
+    }
+  }
+  
