@@ -1,9 +1,11 @@
 // Function to fetch API Key securely (optional, if server is set up for this)
 async function fetchApiKey() {
   try {
-    const response = await fetch('/get-api-key');
-    if (!response.ok) throw new Error("Unable to fetch API key from server.");
+    console.log("Fetching API Key from:", 'http://localhost:3000/get-api-key'); // Debugging
+    const response = await fetch('http://localhost:3000/get-api-key');
+    if (!response.ok) throw new Error("Unable to fetch API key.");
     const data = await response.json();
+    console.log("Fetched API Key:", data.apiKey); // Debugging
     return data.apiKey;
   } catch (error) {
     console.error("Error fetching API key:", error);
@@ -13,8 +15,9 @@ async function fetchApiKey() {
 
 // Fetch data from a specified API endpoint
 async function fetchData(url) {
+  console.log("Fetching data from URL:", url); // Debugging
   const response = await fetch(url);
-  if (!response.ok) throw new Error("Unable to fetch data from API. Please check your input.");
+  if (!response.ok) throw new Error("Unable to fetch data from API.");
   const data = await response.json();
   if (data.status !== "success") throw new Error(data.data.message || "API error.");
   return data;
@@ -75,6 +78,9 @@ document.getElementById("location-form").addEventListener("submit", async (event
     const cityUrl = `https://api.airvisual.com/v2/city?city=${city}&state=${state}&country=${country}&key=${API_KEY}`;
     const statesUrl = `https://api.airvisual.com/v2/states?country=${country}&key=${API_KEY}`;
 
+    console.log("City API URL:", cityUrl); // Debugging
+    console.log("States API URL:", statesUrl); // Debugging
+
     // Fetch data
     const cityData = await fetchData(cityUrl);
     const { aqius: aqi, mainus: mainPollutant } = cityData.data.current.pollution;
@@ -90,6 +96,7 @@ document.getElementById("location-form").addEventListener("submit", async (event
     // Update the DOM
     updateResult({ city, state, country, aqi, aqiIcon, mainPollutant, temperature, recommendation, states });
   } catch (error) {
+    console.error("Error:", error); // Debugging
     alert(`Error: ${error.message}`);
   }
 });
