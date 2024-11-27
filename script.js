@@ -51,28 +51,26 @@ document.getElementById("location-form").addEventListener("submit", async (event
     }
 
     // Determine AQI icon based on value
-let aqiIcon;
-if (aqi <= 50) {
-  aqiIcon = "🟢"; // Green
-} else if (aqi <= 100) {
-  aqiIcon = "🟡"; // Yellow
-} else if (aqi <= 150) {
-  aqiIcon = "🟠"; // Orange
-} else if (aqi <= 200) {
-  aqiIcon = "🔴"; // Red
-} else if (aqi <= 300) {
-  aqiIcon = "🟣"; // Purple
-} else {
-  aqiIcon = "⚫"; // Black
-}
-resultDiv.innerHTML += `<p><strong>AQI Level:</strong> ${aqiIcon}</p>`;
-
+    let aqiIcon;
+    if (aqi <= 50) {
+      aqiIcon = "🟢"; // Green
+    } else if (aqi <= 100) {
+      aqiIcon = "🟡"; // Yellow
+    } else if (aqi <= 150) {
+      aqiIcon = "🟠"; // Orange
+    } else if (aqi <= 200) {
+      aqiIcon = "🔴"; // Red
+    } else if (aqi <= 300) {
+      aqiIcon = "🟣"; // Purple
+    } else {
+      aqiIcon = "⚫"; // Black
+    }
 
     // Display data dynamically
     const resultDiv = document.getElementById("result");
     resultDiv.innerHTML = `
       <h2>Air Quality in ${city}, ${state}, ${country}</h2>
-      <p><strong>AQI (US):</strong> ${aqi}</p>
+      <p><strong>AQI (US):</strong> ${aqi} ${aqiIcon}</p>
       <p><strong>Main Pollutant:</strong> ${mainPollutant}</p>
       <p><strong>Temperature:</strong> ${temperature}°C</p>
       <p><strong>Health Recommendation:</strong> ${recommendation}</p>
