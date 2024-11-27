@@ -2,7 +2,7 @@
 async function fetchApiKey() {
   try {
     const response = await fetch('/get-api-key');
-    if (!response.ok) throw new Error("Unable to fetch API key from server.");
+    if (!response.ok) throw new Error("Unable to fetch data from API. Please check your input.");
     const data = await response.json();
     return data.apiKey;
   } catch (error) {
