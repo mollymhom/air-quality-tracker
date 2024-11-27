@@ -5,16 +5,22 @@ const API_KEY = "c0036d36-b809-4435-ab73-08e8ea5c92cf";
 document.getElementById("location-form").addEventListener("submit", async (event) => {
   event.preventDefault(); // Prevent form submission
 
-  // Get user input using const/let
+  // Get user input
   const city = document.getElementById("city").value.trim();
   const state = document.getElementById("state").value.trim();
   const country = document.getElementById("country").value.trim();
 
+  const resultDiv = document.getElementById("result");
+  const loadingMessage = `<p>Loading data, please wait...</p>`;
+
   // Validate inputs
   if (!city || !state || !country) {
-    alert("Please fill in all fields.");
+    resultDiv.innerHTML = `<p style="color: red;">Please fill in all fields.</p>`;
     return;
   }
+
+  // Show loading message
+  resultDiv.innerHTML = loadingMessage;
 
   // API URLs
   const cityUrl = `https://api.airvisual.com/v2/city?city=${city}&state=${state}&country=${country}&key=${API_KEY}`;
@@ -43,7 +49,7 @@ document.getElementById("location-form").addEventListener("submit", async (event
       throw new Error(statesData.data.message || "Invalid response from states API");
     }
 
-    // Extract states information using map and template literals
+    // Extract states information
     const states = statesData.data.map((state) => state.state).join(", ");
 
     // Add health recommendation based on AQI
@@ -62,24 +68,14 @@ document.getElementById("location-form").addEventListener("submit", async (event
       recommendation = "Hazardous: Health warning of emergency conditions: everyone is more likely to be affected.";
     }
 
-    // Determine AQI icon using let
-    let aqiIcon = "";
-    if (aqi <= 50) {
-      aqiIcon = "🟢"; // Green
-    } else if (aqi <= 100) {
-      aqiIcon = "🟡"; // Yellow
-    } else if (aqi <= 150) {
-      aqiIcon = "🟠"; // Orange
-    } else if (aqi <= 200) {
-      aqiIcon = "🔴"; // Red
-    } else if (aqi <= 300) {
-      aqiIcon = "🟣"; // Purple
-    } else {
-      aqiIcon = "⚫"; // Black
-    }
+    // Determine AQI icon
+    const aqiIcon = aqi <= 50 ? "🟢" :
+                    aqi <= 100 ? "🟡" :
+                    aqi <= 150 ? "🟠" :
+                    aqi <= 200 ? "🔴" :
+                    aqi <= 300 ? "🟣" : "⚫";
 
-    // Display data dynamically with template literals
-    const resultDiv = document.getElementById("result");
+    // Display data dynamically
     resultDiv.innerHTML = `
       <h2>Air Quality in ${city}, ${state}, ${country}</h2>
       <p><strong>AQI (US):</strong> ${aqi} ${aqiIcon}</p>
@@ -88,8 +84,7 @@ document.getElementById("location-form").addEventListener("submit", async (event
       <p><strong>Health Recommendation:</strong> ${recommendation}</p>
       <p><strong>Available States in ${country}:</strong> ${states}</p>
     `;
-    resultDiv.style.display = "block"; // Ensure the result is visible
   } catch (error) {
-    alert(`Error: ${error.message}`);
+    resultDiv.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
   }
 });
