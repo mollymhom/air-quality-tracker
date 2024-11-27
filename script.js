@@ -1,10 +1,20 @@
-// Actual API key from AirVisual API
-const API_KEY = "c0036d36-b809-4435-ab73-08e8ea5c92cf";
+// Function to fetch API Key securely (optional, if server is set up for this)
+async function fetchApiKey() {
+  try {
+    const response = await fetch('/get-api-key');
+    if (!response.ok) throw new Error("Unable to fetch API key from server.");
+    const data = await response.json();
+    return data.apiKey;
+  } catch (error) {
+    console.error("Error fetching API key:", error);
+    throw error;
+  }
+}
 
-// Fetch data from an API endpoint
+// Fetch data from a specified API endpoint
 async function fetchData(url) {
   const response = await fetch(url);
-  if (!response.ok) throw new Error("Unable to fetch air quality data. Please check your input.");
+  if (!response.ok) throw new Error("Unable to fetch data from API. Please check your input.");
   const data = await response.json();
   if (data.status !== "success") throw new Error(data.data.message || "API error.");
   return data;
@@ -12,19 +22,12 @@ async function fetchData(url) {
 
 // Get health recommendation based on AQI
 function getHealthRecommendation(aqi) {
-  if (aqi <= 50) {
-    return "Good: Air quality is considered satisfactory, and air pollution poses little or no risk.";
-  } else if (aqi <= 100) {
-    return "Moderate: Air quality is acceptable. However, there may be a risk for some people who are unusually sensitive to air pollution.";
-  } else if (aqi <= 150) {
-    return "Unhealthy for Sensitive Groups: Members of sensitive groups may experience health effects. The general public is less likely to be affected.";
-  } else if (aqi <= 200) {
-    return "Unhealthy: Everyone may begin to experience health effects; members of sensitive groups may experience more serious health effects.";
-  } else if (aqi <= 300) {
-    return "Very Unhealthy: Health alert: everyone may experience more serious health effects.";
-  } else {
-    return "Hazardous: Health warning of emergency conditions: everyone is more likely to be affected.";
-  }
+  if (aqi <= 50) return "Good: Air quality is satisfactory, with little or no risk.";
+  if (aqi <= 100) return "Moderate: Air quality is acceptable but may affect sensitive individuals.";
+  if (aqi <= 150) return "Unhealthy for Sensitive Groups: Potential health effects for sensitive individuals.";
+  if (aqi <= 200) return "Unhealthy: Everyone may experience health effects.";
+  if (aqi <= 300) return "Very Unhealthy: Health alert for serious health effects.";
+  return "Hazardous: Emergency conditions affecting everyone.";
 }
 
 // Get AQI icon based on value
@@ -38,9 +41,7 @@ function getAqiIcon(aqi) {
 }
 
 // Update the DOM with results
-function updateResult({
-  city, state, country, aqi, aqiIcon, mainPollutant, temperature, recommendation, states,
-}) {
+function updateResult({ city, state, country, aqi, aqiIcon, mainPollutant, temperature, recommendation, states }) {
   const resultDiv = document.getElementById("result");
   resultDiv.innerHTML = `
     <h2>Air Quality in ${city}, ${state}, ${country}</h2>
@@ -53,7 +54,7 @@ function updateResult({
   resultDiv.style.display = "block";
 }
 
-// Main event listener for form submission
+// Event listener for form submission
 document.getElementById("location-form").addEventListener("submit", async (event) => {
   event.preventDefault();
 
@@ -66,16 +67,19 @@ document.getElementById("location-form").addEventListener("submit", async (event
     return;
   }
 
-  const cityUrl = `https://api.airvisual.com/v2/city?city=${city}&state=${state}&country=${country}&key=${API_KEY}`;
-  const statesUrl = `https://api.airvisual.com/v2/states?country=${country}&key=${API_KEY}`;
-
   try {
-    // Fetch air quality data
+    // Fetch API key (replace this with your hardcoded key if not using a server)
+    const API_KEY = await fetchApiKey();
+
+    // API URLs
+    const cityUrl = `https://api.airvisual.com/v2/city?city=${city}&state=${state}&country=${country}&key=${API_KEY}`;
+    const statesUrl = `https://api.airvisual.com/v2/states?country=${country}&key=${API_KEY}`;
+
+    // Fetch data
     const cityData = await fetchData(cityUrl);
     const { aqius: aqi, mainus: mainPollutant } = cityData.data.current.pollution;
     const { tp: temperature } = cityData.data.current.weather;
 
-    // Fetch states data
     const statesData = await fetchData(statesUrl);
     const states = statesData.data.map((state) => state.state).join(", ");
 
@@ -84,9 +88,7 @@ document.getElementById("location-form").addEventListener("submit", async (event
     const aqiIcon = getAqiIcon(aqi);
 
     // Update the DOM
-    updateResult({
-      city, state, country, aqi, aqiIcon, mainPollutant, temperature, recommendation, states,
-    });
+    updateResult({ city, state, country, aqi, aqiIcon, mainPollutant, temperature, recommendation, states });
   } catch (error) {
     alert(`Error: ${error.message}`);
   }
