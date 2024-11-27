@@ -34,6 +34,24 @@ document.getElementById("location-form").addEventListener("submit", async (event
     const mainPollutant = data.data.current.pollution.mainus;
     const temperature = data.data.current.weather.tp;
 
+    // Add health recommendation based on AQI
+let recommendation;
+if (aqi <= 50) {
+  recommendation = "Good: Air quality is considered satisfactory, and air pollution poses little or no risk.";
+} else if (aqi <= 100) {
+  recommendation = "Moderate: Air quality is acceptable. However, there may be a risk for some people who are unusually sensitive to air pollution.";
+} else if (aqi <= 150) {
+  recommendation = "Unhealthy for Sensitive Groups: Members of sensitive groups may experience health effects. The general public is less likely to be affected.";
+} else if (aqi <= 200) {
+  recommendation = "Unhealthy: Everyone may begin to experience health effects; members of sensitive groups may experience more serious health effects.";
+} else if (aqi <= 300) {
+  recommendation = "Very Unhealthy: Health alert: everyone may experience more serious health effects.";
+} else {
+  recommendation = "Hazardous: Health warning of emergency conditions: everyone is more likely to be affected.";
+}
+resultDiv.innerHTML += `<p><strong>Health Recommendation:</strong> ${recommendation}</p>`;
+
+
     // Display data dynamically
     const resultDiv = document.getElementById("result");
     resultDiv.innerHTML = `
