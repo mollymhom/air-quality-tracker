@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Air Quality Tracker</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Air Quality Tracker</h1>
+    <p>Check the real-time air quality in your city!</p>
+  </header>
+  <main>
+    <form id="location-form">
+      <input type="text" id="city" placeholder="Enter City" required>
+      <input type="text" id="state" placeholder="Enter State" required>
+      <input type="text" id="country" placeholder="Enter Country" required>
+      <button type="submit">Check Air Quality</button>
+    </form>
+    <div id="result">
+      <!-- Air quality information will be displayed here -->
+    </div>
+  </main>
+  <footer>
+    <p>Data provided by <a href="https://api-docs.iqair.com/" target="_blank">AirVisual API</a></p>
+  </footer>
+  <script src="script.js"></script>
+</body>
+</html>
