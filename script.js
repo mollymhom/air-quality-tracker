@@ -50,6 +50,24 @@ document.getElementById("location-form").addEventListener("submit", async (event
       recommendation = "Hazardous: Health warning of emergency conditions: everyone is more likely to be affected.";
     }
 
+    // Determine AQI icon based on value
+let aqiIcon;
+if (aqi <= 50) {
+  aqiIcon = "🟢"; // Green
+} else if (aqi <= 100) {
+  aqiIcon = "🟡"; // Yellow
+} else if (aqi <= 150) {
+  aqiIcon = "🟠"; // Orange
+} else if (aqi <= 200) {
+  aqiIcon = "🔴"; // Red
+} else if (aqi <= 300) {
+  aqiIcon = "🟣"; // Purple
+} else {
+  aqiIcon = "⚫"; // Black
+}
+resultDiv.innerHTML += `<p><strong>AQI Level:</strong> ${aqiIcon}</p>`;
+
+
     // Display data dynamically
     const resultDiv = document.getElementById("result");
     resultDiv.innerHTML = `
