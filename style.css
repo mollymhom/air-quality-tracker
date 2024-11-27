@@ -36,3 +36,17 @@ body {
     display: none; /* Hide the result section by default */
   }
   
+  button:hover {
+    background-color: #005bb5;
+  }
+  
+  #result.good {
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+  }
+  
+  #result.unhealthy {
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+  }
+  
