@@ -1,4 +1,4 @@
-// Replace with your actual API key from AirVisual API
+// Actual API key from AirVisual API
 const API_KEY = "c0036d36-b809-4435-ab73-08e8ea5c92cf";
 
 document.getElementById("location-form").addEventListener("submit", async (event) => {
@@ -59,7 +59,7 @@ document.getElementById("location-form").addEventListener("submit", async (event
       <p><strong>Temperature:</strong> ${temperature}°C</p>
       <p><strong>Health Recommendation:</strong> ${recommendation}</p>
     `;
-    resultDiv.style.display = "block"; // Show the result section
+    resultDiv.style.display = "block"; // Ensure the result is visible
 
   } catch (error) {
     alert(`Error: ${error.message}`);
