@@ -1,94 +1,92 @@
 // Actual API key from AirVisual API
 const API_KEY = "c0036d36-b809-4435-ab73-08e8ea5c92cf";
 
-// Arrow function for event listener
-document.getElementById("location-form").addEventListener("submit", async (event) => {
-  event.preventDefault(); // Prevent form submission
+// Fetch data from an API endpoint
+async function fetchData(url) {
+  const response = await fetch(url);
+  if (!response.ok) throw new Error("Failed to fetch data.");
+  const data = await response.json();
+  if (data.status !== "success") throw new Error(data.data.message || "API error.");
+  return data;
+}
 
-  // Get user input using const/let
+// Get health recommendation based on AQI
+function getHealthRecommendation(aqi) {
+  if (aqi <= 50) {
+    return "Good: Air quality is considered satisfactory, and air pollution poses little or no risk.";
+  } else if (aqi <= 100) {
+    return "Moderate: Air quality is acceptable. However, there may be a risk for some people who are unusually sensitive to air pollution.";
+  } else if (aqi <= 150) {
+    return "Unhealthy for Sensitive Groups: Members of sensitive groups may experience health effects. The general public is less likely to be affected.";
+  } else if (aqi <= 200) {
+    return "Unhealthy: Everyone may begin to experience health effects; members of sensitive groups may experience more serious health effects.";
+  } else if (aqi <= 300) {
+    return "Very Unhealthy: Health alert: everyone may experience more serious health effects.";
+  } else {
+    return "Hazardous: Health warning of emergency conditions: everyone is more likely to be affected.";
+  }
+}
+
+// Get AQI icon based on value
+function getAqiIcon(aqi) {
+  if (aqi <= 50) return "🟢"; // Green
+  if (aqi <= 100) return "🟡"; // Yellow
+  if (aqi <= 150) return "🟠"; // Orange
+  if (aqi <= 200) return "🔴"; // Red
+  if (aqi <= 300) return "🟣"; // Purple
+  return "⚫"; // Black
+}
+
+// Update the DOM with results
+function updateResult({
+  city, state, country, aqi, aqiIcon, mainPollutant, temperature, recommendation, states,
+}) {
+  const resultDiv = document.getElementById("result");
+  resultDiv.innerHTML = `
+    <h2>Air Quality in ${city}, ${state}, ${country}</h2>
+    <p><strong>AQI (US):</strong> ${aqi} ${aqiIcon}</p>
+    <p><strong>Main Pollutant:</strong> ${mainPollutant}</p>
+    <p><strong>Temperature:</strong> ${temperature}°C</p>
+    <p><strong>Health Recommendation:</strong> ${recommendation}</p>
+    <p><strong>Available States in ${country}:</strong> ${states}</p>
+  `;
+  resultDiv.style.display = "block";
+}
+
+// Main event listener for form submission
+document.getElementById("location-form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+
   const city = document.getElementById("city").value.trim();
   const state = document.getElementById("state").value.trim();
   const country = document.getElementById("country").value.trim();
 
-  // Validate inputs
   if (!city || !state || !country) {
     alert("Please fill in all fields.");
     return;
   }
 
-  // API URLs
   const cityUrl = `https://api.airvisual.com/v2/city?city=${city}&state=${state}&country=${country}&key=${API_KEY}`;
   const statesUrl = `https://api.airvisual.com/v2/states?country=${country}&key=${API_KEY}`;
 
   try {
-    // Fetch data from city endpoint
-    const cityResponse = await fetch(cityUrl);
-    if (!cityResponse.ok) throw new Error("Unable to fetch air quality data. Please check your input.");
-
-    const cityData = await cityResponse.json();
-    if (cityData.status !== "success") {
-      throw new Error(cityData.data.message || "Invalid response from city API");
-    }
-
-    // Extract relevant data from city API
+    // Fetch air quality data
+    const cityData = await fetchData(cityUrl);
     const { aqius: aqi, mainus: mainPollutant } = cityData.data.current.pollution;
     const { tp: temperature } = cityData.data.current.weather;
 
-    // Fetch data from states endpoint
-    const statesResponse = await fetch(statesUrl);
-    if (!statesResponse.ok) throw new Error("Error fetching states data");
-
-    const statesData = await statesResponse.json();
-    if (statesData.status !== "success") {
-      throw new Error(statesData.data.message || "Invalid response from states API");
-    }
-
-    // Extract states information using map and template literals
+    // Fetch states data
+    const statesData = await fetchData(statesUrl);
     const states = statesData.data.map((state) => state.state).join(", ");
 
-    // Add health recommendation based on AQI
-    let recommendation = "";
-    if (aqi <= 50) {
-      recommendation = "Good: Air quality is considered satisfactory, and air pollution poses little or no risk.";
-    } else if (aqi <= 100) {
-      recommendation = "Moderate: Air quality is acceptable. However, there may be a risk for some people who are unusually sensitive to air pollution.";
-    } else if (aqi <= 150) {
-      recommendation = "Unhealthy for Sensitive Groups: Members of sensitive groups may experience health effects. The general public is less likely to be affected.";
-    } else if (aqi <= 200) {
-      recommendation = "Unhealthy: Everyone may begin to experience health effects; members of sensitive groups may experience more serious health effects.";
-    } else if (aqi <= 300) {
-      recommendation = "Very Unhealthy: Health alert: everyone may experience more serious health effects.";
-    } else {
-      recommendation = "Hazardous: Health warning of emergency conditions: everyone is more likely to be affected.";
-    }
+    // Generate recommendation and icon
+    const recommendation = getHealthRecommendation(aqi);
+    const aqiIcon = getAqiIcon(aqi);
 
-    // Determine AQI icon using let
-    let aqiIcon = "";
-    if (aqi <= 50) {
-      aqiIcon = "🟢"; // Green
-    } else if (aqi <= 100) {
-      aqiIcon = "🟡"; // Yellow
-    } else if (aqi <= 150) {
-      aqiIcon = "🟠"; // Orange
-    } else if (aqi <= 200) {
-      aqiIcon = "🔴"; // Red
-    } else if (aqi <= 300) {
-      aqiIcon = "🟣"; // Purple
-    } else {
-      aqiIcon = "⚫"; // Black
-    }
-
-    // Display data dynamically with template literals
-    const resultDiv = document.getElementById("result");
-    resultDiv.innerHTML = `
-      <h2>Air Quality in ${city}, ${state}, ${country}</h2>
-      <p><strong>AQI (US):</strong> ${aqi} ${aqiIcon}</p>
-      <p><strong>Main Pollutant:</strong> ${mainPollutant}</p>
-      <p><strong>Temperature:</strong> ${temperature}°C</p>
-      <p><strong>Health Recommendation:</strong> ${recommendation}</p>
-      <p><strong>Available States in ${country}:</strong> ${states}</p>
-    `;
-    resultDiv.style.display = "block"; // Ensure the result is visible
+    // Update the DOM
+    updateResult({
+      city, state, country, aqi, aqiIcon, mainPollutant, temperature, recommendation, states,
+    });
   } catch (error) {
     alert(`Error: ${error.message}`);
   }
