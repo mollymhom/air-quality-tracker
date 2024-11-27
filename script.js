@@ -4,7 +4,7 @@ const API_KEY = "c0036d36-b809-4435-ab73-08e8ea5c92cf";
 // Fetch data from an API endpoint
 async function fetchData(url) {
   const response = await fetch(url);
-  if (!response.ok) throw new Error("Failed to fetch data.");
+  if (!response.ok) throw new Error("Unable to fetch air quality data. Please check your input.");
   const data = await response.json();
   if (data.status !== "success") throw new Error(data.data.message || "API error.");
   return data;
